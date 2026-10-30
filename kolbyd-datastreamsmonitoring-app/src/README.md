@@ -2,9 +2,9 @@
 
 Inspect Kafka producer → topic → consumer relationships and causal operation ranges from standard OpenTelemetry traces, with .NET prioritized. Native Grafana controls/tables/Scenes charts surround a custom live topology. Grafana's sidebar is the only top-level navigation; every page uses a dashboard-style canvas.
 
-![Observed local Kafka topology](img/screenshots/map.png)
+![Observed local Kafka topology](https://raw.githubusercontent.com/kolbyd/grafana-data-streams-monitoring/v1.0.0/kolbyd-datastreamsmonitoring-app/src/img/screenshots/map.png)
 
-![Measured causal operation range](img/screenshots/measure.png)
+![Measured causal operation range](https://raw.githubusercontent.com/kolbyd/grafana-data-streams-monitoring/v1.0.0/kolbyd-datastreamsmonitoring-app/src/img/screenshots/measure.png)
 
 Screenshots capture this app's own local Kafka lab; they are not traffic-coverage or performance guarantees.
 

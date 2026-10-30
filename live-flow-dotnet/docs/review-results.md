@@ -1,5 +1,11 @@
 # Library review results
 
+Current main-branch update, 2026-10-30: OpenTelemetry API, SDK and OTLP exporter packages are aligned to **1.15.3**, fixing [GHSA-g94r-2vxg-569j](https://github.com/open-telemetry/opentelemetry-dotnet/security/advisories/GHSA-g94r-2vxg-569j). Audited locked restores passed for all five library/sample/lab projects with no known vulnerable direct or transitive packages. The Release library/sample build had zero warnings/errors; all 33 library checks, 10 lab tests and sample `--help` passed. No audit suppression or application/API changes were required.
+
+## Historical initial package validation
+
+The record below describes the original preview artifacts; the dependency update is on main and does not replace the frozen 1.0.0 source/release artifacts.
+
 Verified 2026-10-30 on Windows, .NET SDK 10.0.403 and .NET 8 runtime 8.0.33.
 
 - Locked restore passed with exact Confluent.Kafka 2.12.0, OpenTelemetry.Api 1.15.0 and checked-in dependency lock files. The compiled sample uses the official OpenTelemetry OTLP exporter 1.15.0. NuGet audit was disabled for the reproducible restore; this check is not an online vulnerability audit.

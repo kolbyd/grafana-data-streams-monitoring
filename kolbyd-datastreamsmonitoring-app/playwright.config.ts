@@ -13,6 +13,8 @@ export default defineConfig<PluginOptions>(baseConfig, {
   use: {
     baseURL: process.env.GRAFANA_URL || 'http://127.0.0.1:3001',
     ...browser,
+    screenshot: process.env.CI ? 'only-on-failure' : 'off',
+    trace: process.env.CI ? 'off' : 'on-first-retry',
     grafanaAPICredentials: { user: 'admin', password },
     user: { user: 'admin', password, role: 'Admin' },
     userPreferences: { theme: 'light' },

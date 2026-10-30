@@ -141,11 +141,11 @@ jobs:
               for name in ['GRAFANA_ADMIN_PASSWORD', 'FLOW_SERVICE_API_KEY']:
                   value = secrets.token_hex(24)
                   print('::add-mask::' + value)
-                  output.write(name + '=' + value + '\n')
+                  print(name + '=' + value, file=output)
       - name: Start provisioned Grafana and collector
         run: docker compose -p dsm-ci up --build --detach --wait --wait-timeout 180
       - name: Run plugin-e2e without credential-bearing traces
-        run: npm run e2e -- --trace=off --screenshot=only-on-failure
+        run: npm run e2e -- --trace=off
       - name: Container diagnostics
         if: failure()
         run: docker compose -p dsm-ci logs --tail 100

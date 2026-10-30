@@ -10,6 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/LiveFlow.Kafka/LiveFlow.Kafka.csproj" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="[1.15.0]" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="[1.15.3]" />
   </ItemGroup>
 </Project>

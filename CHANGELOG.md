@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Security
+
+- Update the .NET instrumentation/sample/lab OpenTelemetry packages to 1.15.3 for GHSA-g94r-2vxg-569j; audited locked restores and the 33 library/10 lab checks pass without audit suppression.
+
 ### CI and documentation
 
 - Add `.github/workflows/ci.yml` for frontend/backend/.NET checks, Linux Mage packaging, plugin validation and Grafana 13.2.4/13.3.0 browser coverage, with Node 24.15.0/Go 1.27.3 toolchains. Actual workflow status is separate from historical local results.

@@ -6,7 +6,7 @@ This is an explicit instrumentation library. It does not implement a CLR profile
 
 ## Use the normal OpenTelemetry pipeline
 
-The compiled [OTLP Kafka sample](samples/OtlpKafka/Program.cs) registers the library source/meter and the official `OpenTelemetry.Exporter.OpenTelemetryProtocol` 1.15.0 package:
+The compiled [OTLP Kafka sample](samples/OtlpKafka/Program.cs) registers the library source/meter and the official `OpenTelemetry.Exporter.OpenTelemetryProtocol` 1.15.3 package:
 
 ```csharp
 using LiveFlow.Kafka;
