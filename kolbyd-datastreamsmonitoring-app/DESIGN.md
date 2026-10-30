@@ -41,7 +41,7 @@ spacing:
   section: "24px"
 components:
   native-filter:
-    width: "160px"
+    width: "152px"
   map-list-display:
     height: "32px"
   topology-node:

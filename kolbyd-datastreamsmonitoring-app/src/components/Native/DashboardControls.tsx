@@ -303,7 +303,7 @@ export function DashboardControls(props: DashboardControlsProps) {
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  filter: css({ width: theme.spacing(20), maxWidth: '100%', minWidth: 0 }),
+  filter: css({ width: theme.spacing(19), maxWidth: '100%', minWidth: 0 }),
   row: css({
     display: 'flex',
     flexWrap: 'wrap',
