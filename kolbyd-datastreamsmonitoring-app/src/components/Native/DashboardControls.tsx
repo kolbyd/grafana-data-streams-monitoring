@@ -314,11 +314,14 @@ const getStyles = (theme: GrafanaTheme2) => ({
   }),
   variables: css({
     display: 'flex',
-    flex: '1 1 auto',
+    // Allocate the remaining row width before wrapping; max-content flex basis
+    // otherwise pushes the time picker down even when the pills can shrink to fit.
+    flex: '1 1 0',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
     gap: theme.spacing(1),
     minWidth: 0,
+    '@media (max-width: 1100px)': { flexBasis: '100%' },
   }),
   actions: css({ display: 'flex', alignItems: 'center', gap: theme.spacing(1) }),
   time: css({ marginLeft: 'auto', flex: '0 1 auto', minWidth: 0 }),

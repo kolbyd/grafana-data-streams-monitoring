@@ -8,6 +8,7 @@
 
 ### CI and documentation
 
+- Apply [Grafana's voice and tone guidelines](https://grafana.com/docs/writers-toolkit/write/style-guide/voice-tone-guidelines/) to current task documentation, with action headings, short steps, clear outcomes and an explicit writing reference in CONTRIBUTING.md.
 - Add `.github/workflows/ci.yml` for frontend/backend/.NET checks, Linux Mage packaging, plugin validation and Grafana 13.2.4/13.3.0 browser coverage, with Node 24.15.0/Go 1.27.3 toolchains. Actual workflow status is separate from historical local results.
 - Add future-tag draft-release automation that calls CI and can sign through an existing configured secret; it does not replace the frozen v1.0.0 artifacts or create credentials.
 - Expand the root README with real Map/Measure screenshots, four-project architecture, local startup and measurement/deployment boundaries.

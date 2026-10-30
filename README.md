@@ -8,7 +8,7 @@ The map supports native variable filters and time ranges, pointer/touch pan, cur
 
 ![Measure showing a selected causal pathway](kolbyd-datastreamsmonitoring-app/src/img/screenshots/measure.png)
 
-## Projects
+## Choose a project
 
 | Project | Responsibility |
 | --- | --- |
@@ -23,13 +23,15 @@ Kafka applications → standard OTLP traces → Flow collector
   → Go snapshot proxy → Data Streams data source
 ```
 
-The collector is a separate required process for this app. It does not require Kafka credentials; it derives the graph from telemetry. Keep an existing OTel pipeline and add a collector fan-out branch where appropriate.
+Run the collector as a separate process that Grafana can reach. It builds the graph from telemetry, so it doesn't need Kafka credentials. If you already have an OTel pipeline, keep it and add a fan-out branch to the collector.
 
 The catalog app ID is `eageraspen2909-datastreamsmonitoring-app`; the nested data-source ID is `eageraspen2909-datastreamsmonitoring-datasource`. The physical app folder retains its original scaffold name.
 
-## Try locally
+## Run the app locally
 
-Install Docker Desktop with Linux containers, Node.js 24.15 or newer, Go and Mage. The local browser launcher uses Microsoft Edge. From the repository root in PowerShell:
+Before you start, install Docker Desktop with Linux containers, Node.js 24.15 or newer, Go and Mage. The local browser launcher uses Microsoft Edge.
+
+From the repository root, build and start the app in PowerShell:
 
 ```powershell
 cd kolbyd-datastreamsmonitoring-app
@@ -37,13 +39,13 @@ cd kolbyd-datastreamsmonitoring-app
 ./start-review.ps1
 ```
 
-Open [Map](http://127.0.0.1:3001/a/eageraspen2909-datastreamsmonitoring-app/explore). **Setup** offers an explicitly labeled synthetic example; it does not connect to Kafka. Follow the [lab README](dotnet-kafka-lab/README.md) for actual Kafka traffic.
+When the services are ready, open [Map](http://127.0.0.1:3001/a/eageraspen2909-datastreamsmonitoring-app/explore). To explore without Kafka traffic, open **Setup** and activate the labeled synthetic example. To send actual Kafka traffic, follow the [lab README](dotnet-kafka-lab/README.md).
 
 The launcher provisions isolated local Grafana and collector containers on loopback ports 3001 and 4318, using random Docker secrets. Anonymous access is Viewer only; connection changes require an administrator. Stop only this review project with `./start-review.ps1 -Stop`.
 
 See [contribution setup and test commands](CONTRIBUTING.md) for all four projects and [configuration/local review](kolbyd-datastreamsmonitoring-app/docs/build-review.md) for authentication and deployment details.
 
-## Measurement boundaries
+## Interpret the measurements
 
 - Rates are **observed operations**, affected by sampling, batches, missing instrumentation, retention and stream limits. They are not authoritative broker message counts or complete traffic coverage.
 - Complete retained send/process parent/link chains can establish an observed range from first retained send to terminal processing completion. A graph path or receive span alone is not business completion. Batch ranges are not individual-message latencies.
@@ -54,13 +56,13 @@ See [contribution setup and test commands](CONTRIBUTING.md) for all four project
 
 Recorded local evidence is in [plugin validation](kolbyd-datastreamsmonitoring-app/docs/review-results.md) and [Kafka lab validation](dotnet-kafka-lab/VALIDATION.md). A passing local workload is not a production capacity or availability claim.
 
-## Releases and development
+## Check releases and CI
 
 The initial [v1.0.0 release](https://github.com/kolbyd/grafana-data-streams-monitoring/releases/tag/v1.0.0), its catalog submission and its release archives are frozen. Subsequent main-branch CI/documentation work is tracked under [Unreleased](CHANGELOG.md); it does not replace those artifacts.
 
 The initial plugin archive targets Linux AMD64 and is unsigned for first catalog review. Catalog approval and public signing are separate. Grafana's backend needs network access to the collector; Grafana Cloud cannot reach a workstation's loopback address. No Cloud installation is performed by the local launcher.
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code. The root [CI workflow](.github/workflows/ci.yml) targets Node 24.15.0, Go 1.27.3 and Grafana 13.2.4/13.3.0 browser coverage. Its actual runs determine status; the recorded 1.0.0 local results do not assert that new main-branch CI has passed. The [release workflow](.github/workflows/release.yml) is for future checked draft releases and does not replace v1.0.0.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) to set up checks for your change. The root [CI workflow](.github/workflows/ci.yml) uses Node 24.15.0 and Go 1.27.3, with browser jobs for Grafana 13.2.4 and 13.3.0. Check [workflow results](https://github.com/kolbyd/grafana-data-streams-monitoring/actions/workflows/ci.yml) for the current status; the recorded 1.0.0 local results don't establish a passing CI run. The [release workflow](.github/workflows/release.yml) prepares future draft releases and leaves v1.0.0 unchanged.
 
 ## License
 

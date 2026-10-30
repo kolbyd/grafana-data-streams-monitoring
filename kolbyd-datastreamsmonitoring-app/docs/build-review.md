@@ -1,19 +1,20 @@
 # Build and review
 
-The source starts from the official `@grafana/create-plugin@7.17.0` App + Go backend scaffold. The CLI does not run directly on Windows, so it was invoked in `node:24.15.0-bookworm-slim` through Docker with the workspace mounted at `/workspace`.
+Build the plugin with the official create-plugin Webpack configuration and Grafana SDK Mage targets. The source uses the `@grafana/create-plugin@7.17.0` App + Go backend scaffold; keep its generated `.config/` files unchanged.
 
-## Build
+## Build the plugin
 
-Use `./build-review.ps1` from PowerShell. It runs:
+From the plugin directory in PowerShell, run:
 
-1. `npm ci --ignore-scripts --no-audit --no-fund` in the Linux Node container.
-2. TypeScript checks, Jest tests, and `npm run build` using the generated Webpack configuration.
-3. Go backend tests and the SDK Mage Linux build.
-4. Linux executable permissions for `dist/gpx_*`.
+```powershell
+./build-review.ps1
+```
+
+A successful build writes the frontend and Linux backend to `dist/` with the required executable permissions. The script installs frontend dependencies with `npm ci --ignore-scripts --no-audit --no-fund`, checks TypeScript/Jest, tests Go and uses the managed Webpack/Mage builds.
 
 The Linux Node installation uses the `liveflow-plugin-node-modules` Docker volume and the workspace's `work/npm-cache` directory. This keeps Linux native dependencies separate from host `node_modules`. The review script's `-SkipTests` option omits tests when a previously verified build is being repeated.
 
-The local Go helper lives under `work/go-toolchain`, with Mage under `work/go-cache/bin`. On another workstation, install a supported Go version and Mage on `PATH`:
+If you use the optional local toolchain, Go is under `work/go-toolchain` and Mage under `work/go-cache/bin`. On a fresh checkout, install a supported Go version and put Mage on `PATH`:
 
 ```powershell
 go install github.com/magefile/mage@v1.17.2
@@ -21,7 +22,7 @@ go install github.com/magefile/mage@v1.17.2
 
 The generated `.config/` build configuration is not modified. Frontend package installation keeps lifecycle scripts disabled. Native controls use `@grafana/ui`; `@grafana/scenes` 9.2.0 time-series panels are lazy-loaded for Pipeline and Kafka charts. Custom Dagre topology and node sparklines remain SVG. Theme aliases come from active GrafanaTheme2, not a fixed app palette.
 
-## Start and test
+## Start and test the app
 
 ```powershell
 ./start-review.ps1
@@ -30,11 +31,11 @@ The generated `.config/` build configuration is not modified. Frontend package i
 
 The second invocation reuses credentials already supplied to the local containers. It runs `@grafana/plugin-e2e` tests in installed Microsoft Edge by default, including native configuration, Setup-only example activation, Map/List, Pipelines/Measure, Kafka Console, Setup, sidebar navigation, native variable/time controls and narrow layouts. Saved Views source is dormant and not a rendered workflow. Direct `npm run e2e` also works when `GRAFANA_ADMIN_PASSWORD` and optionally `GRAFANA_URL` are supplied in the process environment. `PLAYWRIGHT_CHANNEL=chromium` selects bundled Chromium for the Linux CI path. Final check counts, focused reruns and fresh review verdicts belong in `review-results.md`.
 
-The application is available at `http://127.0.0.1:3001/a/eageraspen2909-datastreamsmonitoring-app/explore`, labeled **Map** in Grafana's sidebar. Use the sidebar for all top-level destinations. Each app page uses a dashboard-style canvas; the package no longer includes separate prebuilt dashboards or dashboard menu links. The nested Data Streams data source remains provisioned.
+When the services are ready, open [Map](http://127.0.0.1:3001/a/eageraspen2909-datastreamsmonitoring-app/explore). Use Grafana's sidebar to move between app pages. Each page uses a dashboard-style canvas. The nested Data Streams data source is provisioned; separate prebuilt dashboards and dashboard menu links aren't included.
 
 The specific former dashboard files (`overview.json`, `consumers.json`) and `provisioning/dashboards/flow.yaml` are removed. Their exact local Grafana copies, UIDs `liveflow-overview` and `liveflow-consumers`, were separately deleted. No other dashboards or Cloud resources were mutated. Rebuild/restart after app manifest changes so sidebar navigation updates.
 
-## Local isolation
+## Configure the local connection
 
 Compose project: `liveflow-plugin-review`. Only loopback ports 3001 and 4318 are published. Grafana grants anonymous users the Viewer role. The normal administrator login is required to change the app's service connection. Random administrator and service credentials are supplied as Docker secrets from process environment values; no env file or credential literal is stored in the source.
 
@@ -46,17 +47,17 @@ Standard OTLP traces are the required input. The separate collector retains caus
 
 The sibling `../dotnet-kafka-lab` provides bounded real-Kafka .NET fan-out/fan-in runs with standard W3C propagation, cross-trace joins and retry/DLQ routes. Its README documents isolated Compose startup, tests, foreground/background execution and stop behavior. Set its normal OTLP endpoint and authorization environment for this review service without saving credentials. Run metrics export only against a compatible metrics destination. Actual smoke-test and background live-connection results must be validated separately from browser example tests; do not infer them from lab source or build success.
 
-## Stop and rollback
+## Stop the review services
 
 ```powershell
 ./start-review.ps1 -Stop
 ```
 
-This stops/removes only the named review project's containers and network. Source, build outputs, and the Node dependency volume remain. It does not operate on unrelated Docker projects. Start again from the provisioned definitions to restore the review setup.
+This removes only the named review project's containers and network. Your source, build outputs and Node dependency volume remain, and unrelated Docker projects are unchanged. Run the start command again to restore the review services.
 
 App or nested data-source `plugin.json` changes require a backend/frontend rebuild and Grafana restart. If a running review needs the updated manifest, run `docker compose restart grafana` in this directory with the existing launcher environment, or use the launcher to restart the isolated review project.
 
-## Deployment boundary
+## Prepare a deployment
 
 This setup is for local plugin development. It is not a Cloud installation or a real Kafka load test. Before distribution, follow Grafana's plugin packaging, validation, signing and publishing guidance, and provide a reachable flow-service deployment. Grafana Cloud's restrictions on manually uploaded private plugins still apply.
 
