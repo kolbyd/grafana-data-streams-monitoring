@@ -28,7 +28,7 @@ The generated `.config/` build configuration is not modified. Frontend package i
 ./start-review.ps1 -RunTests
 ```
 
-The second invocation reuses credentials already supplied to the local containers. It runs `@grafana/plugin-e2e` tests in installed Microsoft Edge, including native configuration, Setup-only example activation, Map/List, Pipelines/Measure, Kafka Console, Setup, sidebar navigation, native variable/time controls and narrow layouts. Saved Views source is dormant and not a rendered workflow. Direct `npm run e2e` also works when `GRAFANA_ADMIN_PASSWORD` and optionally `GRAFANA_URL` are supplied in the process environment. Final check counts, focused reruns and fresh review verdicts belong in `review-results.md`.
+The second invocation reuses credentials already supplied to the local containers. It runs `@grafana/plugin-e2e` tests in installed Microsoft Edge by default, including native configuration, Setup-only example activation, Map/List, Pipelines/Measure, Kafka Console, Setup, sidebar navigation, native variable/time controls and narrow layouts. Saved Views source is dormant and not a rendered workflow. Direct `npm run e2e` also works when `GRAFANA_ADMIN_PASSWORD` and optionally `GRAFANA_URL` are supplied in the process environment. `PLAYWRIGHT_CHANNEL=chromium` selects bundled Chromium for the Linux CI path. Final check counts, focused reruns and fresh review verdicts belong in `review-results.md`.
 
 The application is available at `http://127.0.0.1:3001/a/eageraspen2909-datastreamsmonitoring-app/explore`, labeled **Map** in Grafana's sidebar. Use the sidebar for all top-level destinations. Each app page uses a dashboard-style canvas; the package no longer includes separate prebuilt dashboards or dashboard menu links. The nested Data Streams data source remains provisioned.
 
@@ -59,3 +59,5 @@ App or nested data-source `plugin.json` changes require a backend/frontend rebui
 ## Deployment boundary
 
 This setup is for local plugin development. It is not a Cloud installation or a real Kafka load test. Before distribution, follow Grafana's plugin packaging, validation, signing and publishing guidance, and provide a reachable flow-service deployment. Grafana Cloud's restrictions on manually uploaded private plugins still apply.
+
+The repository-level [contribution guide](../../CONTRIBUTING.md) covers all four projects. Root CI targets Grafana 13.2.4 and 13.3.0 with pinned Node/Go tooling; actual runs, not the older local evidence, establish its result. The v1.0.0 tag, submission and archives are frozen. New main-branch documentation/CI work does not rebuild or replace them; future release automation is scoped to subsequent authorized releases.

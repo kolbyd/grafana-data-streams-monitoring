@@ -4,6 +4,12 @@ A complete Kafka topology and causal-pathway app with standard OpenTelemetry inp
 
 The project uses the official `@grafana/create-plugin` 7.17.0 App + Go backend scaffold, Grafana 13.2.4, React 19 and Scenes 9.2.0. The generated `.config/` directory is unchanged.
 
+![Map showing observed traffic from this app's local Kafka lab](src/img/screenshots/map.png)
+
+![Measure showing a selected causal operation range](src/img/screenshots/measure.png)
+
+For the four-project setup and check commands, see [Contributing](../CONTRIBUTING.md). These are existing local-lab captures; they do not claim complete traffic coverage or production performance.
+
 ## Review locally
 
 Requirements: Docker Desktop with Linux containers, Node.js and Microsoft Edge. Builds also need Go/Mage; the launcher can use the workspace's isolated toolchain.
@@ -66,4 +72,3 @@ The managed build uses Webpack/Jest in a pinned Linux Node container on this hos
 Catalog publisher account is kolbyd1, organization eageraspen2909. The app ID is `eageraspen2909-datastreamsmonitoring-app`; the nested data-source ID is `eageraspen2909-datastreamsmonitoring-datasource`. The physical source directory retains its original scaffold name. Catalog screenshots in plugin metadata capture this app's own local Kafka lab.
 
 The source repository is [kolbyd/grafana-data-streams-monitoring](https://github.com/kolbyd/grafana-data-streams-monitoring); report bugs through its [issue tracker](https://github.com/kolbyd/grafana-data-streams-monitoring/issues). The current source layout retains the sibling plugin, collector, .NET library and Kafka-lab folders. GitHub publication is followed by a Grafana catalog submission. The first catalog submission may use an unsigned archive; repository creation does not imply a published release, catalog approval, signing or Cloud installation.
-

@@ -2,6 +2,12 @@
 
 Inspect Kafka producer → topic → consumer relationships and causal operation ranges from standard OpenTelemetry traces, with .NET prioritized. Native Grafana controls/tables/Scenes charts surround a custom live topology. Grafana's sidebar is the only top-level navigation; every page uses a dashboard-style canvas.
 
+![Observed local Kafka topology](img/screenshots/map.png)
+
+![Measured causal operation range](img/screenshots/measure.png)
+
+Screenshots capture this app's own local Kafka lab; they are not traffic-coverage or performance guarantees.
+
 ## Connect
 
 Enable the app, open Configuration, enter the separate flow collector's server-side HTTP(S) address and optional API key, then Save and test. Credentials remain in Grafana secure settings. A Go backend bridges collector snapshots/WebSocket data into Grafana Live; this app is not backend-free.
@@ -35,4 +41,3 @@ The separate .NET library defaults to standard ActivitySource/Meter/W3C propagat
 Requires Grafana 13.2.4 or newer and the separately running collector. The backend package targets Linux AMD64. App ID: eageraspen2909-datastreamsmonitoring-app; data-source ID: eageraspen2909-datastreamsmonitoring-datasource. Catalog publisher account: kolbyd1; organization: eageraspen2909. Signing and a supported distribution route remain required for installation beyond the isolated development setup.
 
 [Source repository](https://github.com/kolbyd/grafana-data-streams-monitoring) · [Report an issue](https://github.com/kolbyd/grafana-data-streams-monitoring/issues). Repository creation does not imply a release or Grafana catalog approval.
-

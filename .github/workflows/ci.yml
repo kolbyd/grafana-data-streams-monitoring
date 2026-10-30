@@ -1,0 +1,181 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PLUGIN_DIR: kolbyd-datastreamsmonitoring-app
+
+jobs:
+  build:
+    name: Build and unit tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GOMAXPROCS: "4"
+      GOFLAGS: "-p=4"
+    defaults:
+      run:
+        working-directory: kolbyd-datastreamsmonitoring-app
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "24.15.0"
+          cache: npm
+          cache-dependency-path: kolbyd-datastreamsmonitoring-app/package-lock.json
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: "1.27.3"
+          cache-dependency-path: kolbyd-datastreamsmonitoring-app/go.sum
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test:ci
+      - run: npm run build
+      - run: go test ./pkg/...
+      - run: go vet ./pkg/...
+      - name: Build backend with the Grafana SDK Mage target
+        run: |
+          go install github.com/magefile/mage@v1.17.2
+          mage -v build:linux
+      - name: Package and verify backend source manifest
+        working-directory: .
+        run: python3 scripts/package-plugin.py
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: plugin-build
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 7
+
+  validate:
+    name: Grafana catalog validation
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: plugin-build
+          path: artifacts
+      - name: Validate packaged plugin and project-root source
+        shell: bash
+        run: |
+          set -euo pipefail
+          archives=(artifacts/*-linux-amd64.zip)
+          test "${#archives[@]}" -eq 1
+          docker run --rm --pull=always \
+            --mount "type=bind,source=$PWD/${archives[0]},target=/archive.zip,readonly" \
+            --mount "type=bind,source=$PWD/$PLUGIN_DIR,target=/source_code,readonly" \
+            grafana/plugin-validator-cli -sourceCodeUri file:///source_code /archive.zip \
+            2>&1 | tee artifacts/plugin-validator.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: catalog-validation
+          path: artifacts/plugin-validator.txt
+          if-no-files-found: ignore
+          retention-days: 7
+
+  e2e:
+    name: Grafana ${{ matrix.grafana }} browser tests
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        grafana: ["13.2.4", "13.3.0"]
+    env:
+      GRAFANA_VERSION: ${{ matrix.grafana }}
+      GRAFANA_URL: http://127.0.0.1:3001
+      PLAYWRIGHT_CHANNEL: chromium
+      COMPOSE_PROJECT_NAME: dsm-ci
+    defaults:
+      run:
+        working-directory: kolbyd-datastreamsmonitoring-app
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "24.15.0"
+          cache: npm
+          cache-dependency-path: kolbyd-datastreamsmonitoring-app/package-lock.json
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: plugin-build
+          path: artifacts
+      - name: Restore plugin distribution
+        working-directory: .
+        run: |
+          mkdir -p "$PLUGIN_DIR/dist" /tmp/dsm-plugin
+          unzip -q artifacts/*-linux-amd64.zip -d /tmp/dsm-plugin
+          cp -R /tmp/dsm-plugin/*/. "$PLUGIN_DIR/dist/"
+          chmod 0755 "$PLUGIN_DIR"/dist/gpx_*
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Generate isolated test credentials
+        shell: python
+        run: |
+          import os, secrets
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              for name in ['GRAFANA_ADMIN_PASSWORD', 'FLOW_SERVICE_API_KEY']:
+                  value = secrets.token_hex(24)
+                  print('::add-mask::' + value)
+                  output.write(name + '=' + value + '\n')
+      - name: Start provisioned Grafana and collector
+        run: docker compose -p dsm-ci up --build --detach --wait --wait-timeout 180
+      - name: Run plugin-e2e without credential-bearing traces
+        run: npm run e2e -- --trace=off --screenshot=only-on-failure
+      - name: Container diagnostics
+        if: failure()
+        run: docker compose -p dsm-ci logs --tail 100
+      - name: Stop isolated test services
+        if: always()
+        run: docker compose -p dsm-ci down --volumes --remove-orphans
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: failure()
+        with:
+          name: browser-failures-${{ matrix.grafana }}
+          path: kolbyd-datastreamsmonitoring-app/test-results/**/test-failed-*.png
+          if-no-files-found: ignore
+          retention-days: 3
+
+  dotnet:
+    name: .NET collector, instrumentation and lab tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: |
+            10.0.403
+            8.0.x
+      - run: dotnet restore live-flow/tests/LiveFlow.Tests/LiveFlow.Tests.csproj --locked-mode
+      - run: dotnet run --project live-flow/tests/LiveFlow.Tests/LiveFlow.Tests.csproj --configuration Release --no-restore
+      - run: dotnet restore live-flow-dotnet/tests/LiveFlow.Kafka.Tests/LiveFlow.Kafka.Tests.csproj --locked-mode
+      - run: dotnet run --project live-flow-dotnet/tests/LiveFlow.Kafka.Tests/LiveFlow.Kafka.Tests.csproj --configuration Release --no-restore
+      - run: dotnet restore dotnet-kafka-lab/tests/DotNetKafkaLab.Tests/DotNetKafkaLab.Tests.csproj --locked-mode
+      - run: dotnet test dotnet-kafka-lab/tests/DotNetKafkaLab.Tests/DotNetKafkaLab.Tests.csproj --configuration Release --no-restore

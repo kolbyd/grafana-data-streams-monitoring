@@ -15,3 +15,6 @@ playwright-report/
 *.zip
 *.nupkg
 .eslintcache
+
+__pycache__/
+*.pyc

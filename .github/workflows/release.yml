@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    name: Prepare reviewed release draft
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+      PLUGIN_DIR: kolbyd-datastreamsmonitoring-app
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Protect existing releases and verify tag version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'A release already exists for this tag; refusing to replace its assets.'
+            exit 1
+          fi
+          python3 -c 'import json, os; v=json.load(open(os.environ["PLUGIN_DIR"]+"/package.json"))["version"]; assert os.environ["RELEASE_TAG"]=="v"+v, "Tag and package version must match"'
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: plugin-build
+          path: artifacts
+      - name: Restore validated distribution
+        run: |
+          mkdir -p "$PLUGIN_DIR/dist" /tmp/dsm-plugin
+          unzip -q artifacts/*-linux-amd64.zip -d /tmp/dsm-plugin
+          cp -R /tmp/dsm-plugin/*/. "$PLUGIN_DIR/dist/"
+          chmod 0755 "$PLUGIN_DIR"/dist/gpx_*
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "24.15.0"
+          cache: npm
+          cache-dependency-path: kolbyd-datastreamsmonitoring-app/package-lock.json
+      - name: Sign when an approved signing token is configured
+        working-directory: kolbyd-datastreamsmonitoring-app
+        env:
+          GRAFANA_ACCESS_POLICY_TOKEN: ${{ secrets.GRAFANA_ACCESS_POLICY_TOKEN }}
+        run: |
+          if [ -n "$GRAFANA_ACCESS_POLICY_TOKEN" ]; then
+            npm ci --ignore-scripts --no-audit --no-fund
+            npm run sign
+          else
+            echo 'No signing token configured; creating an unsigned review draft.'
+          fi
+      - name: Package release and exact tagged source
+        run: python3 scripts/package-plugin.py --tag "$RELEASE_TAG" --source-ref "$GITHUB_SHA"
+      - name: Validate final signed or unsigned archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          archives=(artifacts/*-linux-amd64.zip)
+          docker run --rm --pull=always \
+            --mount "type=bind,source=$PWD/${archives[0]},target=/archive.zip,readonly" \
+            --mount "type=bind,source=$PWD/$PLUGIN_DIR,target=/source_code,readonly" \
+            grafana/plugin-validator-cli -sourceCodeUri file:///source_code /archive.zip \
+            2>&1 | tee artifacts/plugin-validator.txt
+      - name: Create draft with archives, checksums and validation evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --draft --title "$RELEASE_TAG" --generate-notes \
+            artifacts/*.zip artifacts/*.sha1 artifacts/*.sha256 artifacts/plugin-validator.txt
