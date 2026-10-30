@@ -1,0 +1,80 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "app",
+  "name": "Data Streams Monitoring",
+  "id": "eageraspen2909-datastreamsmonitoring-app",
+  "backend": true,
+  "executable": "gpx_data_streams_monitoring",
+  "info": {
+    "keywords": ["app", "kafka", "data streams", "topology", "opentelemetry"],
+    "description": "Explore active Kafka producer, topic and consumer relationships from OpenTelemetry traces with native Grafana controls, live flow and causal pathways.",
+    "author": {
+      "name": "Kolbyd",
+      "url": "https://github.com/kolbyd"
+    },
+    "links": [
+      { "name": "Source", "url": "https://github.com/kolbyd/grafana-data-streams-monitoring" },
+      { "name": "Report an issue", "url": "https://github.com/kolbyd/grafana-data-streams-monitoring/issues" }
+    ],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "datasource/img/logo.svg"
+    },
+    "screenshots": [
+      { "name": "Observed Kafka flow", "path": "img/screenshots/map.png" },
+      { "name": "Measure a causal pathway", "path": "img/screenshots/measure.png" }
+    ],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "includes": [
+    {
+      "type": "page",
+      "name": "Map",
+      "path": "/a/%PLUGIN_ID%/explore",
+      "addToNav": true,
+      "defaultNav": true
+    },
+    {
+      "type": "page",
+      "name": "Pipelines",
+      "path": "/a/%PLUGIN_ID%/pipelines",
+      "addToNav": true
+    },
+    {
+      "type": "page",
+      "name": "Measure",
+      "path": "/a/%PLUGIN_ID%/measure",
+      "addToNav": true
+    },
+    {
+      "type": "page",
+      "name": "Kafka Console",
+      "path": "/a/%PLUGIN_ID%/kafka",
+      "addToNav": true
+    },
+    {
+      "type": "page",
+      "name": "Setup",
+      "path": "/a/%PLUGIN_ID%/setup",
+      "addToNav": true
+    },
+    {
+      "type": "datasource",
+      "name": "Data Streams",
+      "path": "datasource/plugin.json"
+    },
+    {
+      "type": "page",
+      "icon": "cog",
+      "name": "Configuration",
+      "path": "/plugins/%PLUGIN_ID%",
+      "role": "Admin",
+      "addToNav": true
+    }
+  ],
+  "dependencies": {
+    "grafanaDependency": ">=13.2.4",
+    "plugins": []
+  }
+}

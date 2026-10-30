@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Live Flow · Kafka activity</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="/" aria-label="Live Flow home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 10h10l5 12h9M4 22h10l5-12h9"/><circle cx="4" cy="10" r="2"/><circle cx="28" cy="22" r="2"/></svg>Live Flow</a>
+    <span class="descriptor">Kafka activity, as observed</span>
+    <div class="connection"><span id="connection-dot" class="status-dot"></span><span id="connection-status" role="status">Connecting</span></div>
+    <button id="settings-toggle" class="icon-button" title="Connection settings" aria-label="Connection settings" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></svg></button>
+  </header>
+  <form id="connection-form" class="connection-form" hidden>
+    <label>Service API key <input id="api-key" type="password" autocomplete="off" placeholder="Only required when the service uses a key"></label>
+    <button type="submit">Connect</button><span>Kept in this tab’s memory only.</span>
+  </form>
+  <main>
+    <div class="page-heading"><div><h1>Follow the flow.</h1><p>Services, topics, and the messages moving between them.</p></div><div class="heading-actions"><span id="demo-label" class="demo-label" hidden>Synthetic traffic</span><button id="demo-toggle" class="primary-button">Start demo</button></div></div>
+    <section class="workspace" aria-label="Live Kafka topology">
+      <div class="toolbar">
+        <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input id="search" type="search" aria-label="Filter services or topics" placeholder="Find a service or topic"></label>
+        <label class="filter-label"><span>Environment</span><select id="environment" aria-label="Environment"><option value="">All environments</option></select></label>
+        <label class="filter-label"><span>Cluster</span><select id="cluster" aria-label="Kafka cluster"><option value="">All clusters</option></select></label>
+        <div class="motion-controls"><button id="pause" class="quiet-button">Pause motion</button><button id="replay" class="quiet-button" disabled>Replay 15s</button><button id="fit" class="icon-button" title="Fit graph" aria-label="Fit graph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button></div>
+      </div>
+      <div class="map-header"><div class="legend"><span><i class="publish-key"></i>Publish</span><span><i class="receive-key"></i>Receive</span><span><i class="error-key"></i>Error</span></div><span id="freshness">Waiting for observations</span></div>
+      <div class="map-and-detail">
+        <div id="graph-wrap" class="graph-wrap">
+          <svg id="graph" viewBox="0 0 1100 480" aria-label="Producer topic consumer flow map" role="img"><title>Observed Kafka topology</title><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 9 5 1 9" fill="none" stroke="currentColor" stroke-width="1.5"/></marker></defs><g id="edge-layer"></g><g id="node-layer"></g><g id="particle-layer" aria-hidden="true"></g></svg>
+          <div id="empty" class="empty-state"><div class="empty-diagram" aria-hidden="true"><span></span><i></i><b></b><i></i><span></span></div><h2>Your stream starts here.</h2><p>Send Kafka spans to <code>/v1/traces</code> to discover your topology.<br>Or start the synthetic demo to explore the viewer.</p></div>
+          <div id="replay-label" class="replay-label" hidden>Replaying recent observations</div>
+        </div>
+        <aside id="detail" class="detail" hidden aria-label="Selected node details"><button id="close-detail" class="quiet-button">Close details</button><span id="detail-kind" class="detail-kind"></span><h2 id="detail-title"></h2><dl id="detail-values"></dl><p>Counts represent observed client operations. Receiving does not prove business processing is complete.</p></aside>
+      </div>
+      <div class="map-footer"><span id="graph-summary">No relationships discovered</span><span>Particle travel is illustrative. Event timing is measured.</span></div>
+    </section>
+    <div class="lower-grid">
+      <section class="activity" aria-labelledby="activity-heading"><div class="section-heading"><h2 id="activity-heading">Recent observations</h2><span id="activity-note">Live feed</span></div><div class="table-scroll"><table><thead><tr><th>Observed</th><th>Operation</th><th>Service / topic</th><th>Group / record</th><th>Correlation</th></tr></thead><tbody id="events"><tr><td colspan="5" class="no-events">No Kafka activity observed yet.</td></tr></tbody></table></div></section>
+      <section class="summary" aria-labelledby="summary-heading"><h2 id="summary-heading">This service session</h2><dl><div><dt>Publish observations</dt><dd id="published">0</dd></div><div><dt>Receive observations</dt><dd id="received">0</dd></div><div><dt>Matched receive observations</dt><dd id="matched">0</dd></div><div><dt>Errors</dt><dd id="errors">0</dd></div><div><dt>Duplicate exports skipped</dt><dd id="duplicates">0</dd></div><div><dt>Rejected observations</dt><dd id="rejected">0</dd></div></dl><p id="coverage-note">Live state is held in memory. Sampling and missing instrumentation limit coverage.</p></section>
+    </div>
+    <p id="notice" class="notice" role="status" hidden></p>
+    <footer class="page-footer"><span>OTLP in. Activity out.</span><span>Read-only observation · no Kafka credentials required</span></footer>
+  </main>
+</body>
+</html>

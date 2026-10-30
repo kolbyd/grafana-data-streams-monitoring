@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "datasource",
+  "name": "Data Streams",
+  "id": "eageraspen2909-datastreamsmonitoring-datasource",
+  "metrics": true,
+  "annotations": false,
+  "backend": false,
+  "info": {
+    "description": "Current Kafka topology and client observation snapshots from the Data Streams Monitoring app.",
+    "author": { "name": "Kolbyd", "url": "https://github.com/kolbyd" },
+    "links": [
+      { "name": "Source", "url": "https://github.com/kolbyd/grafana-data-streams-monitoring" },
+      { "name": "Report an issue", "url": "https://github.com/kolbyd/grafana-data-streams-monitoring/issues" }
+    ],
+    "keywords": ["kafka", "data streams", "topology", "observations"],
+    "logos": { "small": "img/logo.svg", "large": "img/logo.svg" },
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": { "grafanaDependency": ">=13.2.4", "plugins": [] }
+}

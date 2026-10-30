@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/DotNetKafkaLab/DotNetKafkaLab.csproj" />
+  <Project Path="tests/DotNetKafkaLab.Tests/DotNetKafkaLab.Tests.csproj" />
+</Solution>

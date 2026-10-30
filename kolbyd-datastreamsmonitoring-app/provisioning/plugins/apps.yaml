@@ -1,0 +1,11 @@
+apiVersion: 1
+
+apps:
+  - type: eageraspen2909-datastreamsmonitoring-app
+    org_id: 1
+    disabled: false
+    pinned: true
+    jsonData:
+      serviceUrl: ${FLOW_SERVICE_URL}
+    secureJsonData:
+      apiKey: ${FLOW_SERVICE_API_KEY}

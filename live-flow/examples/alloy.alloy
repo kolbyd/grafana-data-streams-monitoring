@@ -1,0 +1,45 @@
+// Minimal local bridge. Merge the live branch into your existing Alloy config.
+// Keep your existing Grafana export branch; this file deliberately does not replace it.
+otelcol.receiver.otlp "apps" {
+  grpc {
+    endpoint = "127.0.0.1:4317"
+  }
+  http {
+    endpoint = "127.0.0.1:4319"
+  }
+  output {
+    traces = [otelcol.processor.batch.live.input]
+  }
+}
+
+otelcol.processor.batch "live" {
+  timeout = "100ms"
+  send_batch_size = 256
+  send_batch_max_size = 1024
+  output {
+    traces = [otelcol.exporter.otlphttp.live.input]
+  }
+}
+
+otelcol.exporter.otlphttp "live" {
+  client {
+    endpoint = "http://127.0.0.1:4318"
+    headers = {
+      "Authorization" = "Bearer " + sys.env("LIVEFLOW_API_KEY"),
+    }
+  }
+  sending_queue {
+    enabled = true
+    queue_size = 1000
+    num_consumers = 2
+  }
+  retry_on_failure {
+    enabled = true
+    initial_interval = "1s"
+    max_interval = "5s"
+    max_elapsed_time = "30s"
+  }
+}
+// Set LIVEFLOW_API_KEY to Flow__ApiKey, or empty for anonymous loopback review.
+// Place the live branch before tail sampling. Head sampling is already irreversible.
+// Configure authenticated receivers and deployment-appropriate addresses for remote clients.

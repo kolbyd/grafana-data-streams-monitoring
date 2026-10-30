@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/LiveFlow.Kafka/LiveFlow.Kafka.csproj" />
+  <Project Path="tests/LiveFlow.Kafka.Tests/LiveFlow.Kafka.Tests.csproj" />
+  <Project Path="samples/OtlpKafka/OtlpKafka.csproj" />
+</Solution>

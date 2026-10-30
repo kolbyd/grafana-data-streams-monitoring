@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0.403 AS build
+WORKDIR /src
+COPY src/LiveFlow/ ./
+RUN dotnet restore LiveFlow.csproj --locked-mode && dotnet publish LiveFlow.csproj --configuration Release --no-restore --output /out /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.14
+# curl is used only by the container readiness probe.
+USER root
+RUN apt-get update && apt-get install --yes --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY --from=build /out/ ./
+USER $APP_UID
+EXPOSE 4318
+ENTRYPOINT ["dotnet", "LiveFlow.dll"]

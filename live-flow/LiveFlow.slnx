@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LiveFlow/LiveFlow.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LiveFlow.Tests/LiveFlow.Tests.csproj" />
+  </Folder>
+</Solution>

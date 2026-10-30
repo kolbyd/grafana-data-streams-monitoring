@@ -1,0 +1,17 @@
+node_modules/
+dist/
+bin/
+obj/
+artifacts/
+work/
+.env
+.env.*
+!.env.example
+.lab-state/
+playwright/.auth/
+test-results/
+playwright-report/
+*.log
+*.zip
+*.nupkg
+.eslintcache

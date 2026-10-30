@@ -1,0 +1,323 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "fixture-source"
+            }
+          },
+          {
+            "key": "deployment.environment.name",
+            "value": {
+              "stringValue": "test"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "LiveFlow.DataStreams",
+            "version": "0.1.0-preview.1"
+          },
+          "spans": [
+            {
+              "traceId": "0123456789abcdef0123456789abcdef",
+              "spanId": "1111111111111111",
+              "name": "send orders",
+              "kind": 4,
+              "startTimeUnixNano": "1793380662928000000",
+              "endTimeUnixNano": "1793380662930000000",
+              "attributes": [
+                {
+                  "key": "messaging.system",
+                  "value": {
+                    "stringValue": "kafka"
+                  }
+                },
+                {
+                  "key": "messaging.operation.name",
+                  "value": {
+                    "stringValue": "send"
+                  }
+                },
+                {
+                  "key": "messaging.operation.type",
+                  "value": {
+                    "stringValue": "send"
+                  }
+                },
+                {
+                  "key": "messaging.destination.name",
+                  "value": {
+                    "stringValue": "orders"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.cluster.id",
+                  "value": {
+                    "stringValue": "fixture-cluster"
+                  }
+                },
+                {
+                  "key": "messaging.destination.partition.id",
+                  "value": {
+                    "stringValue": "0"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.offset",
+                  "value": {
+                    "intValue": "7"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "fixture-worker"
+            }
+          },
+          {
+            "key": "deployment.environment.name",
+            "value": {
+              "stringValue": "test"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "LiveFlow.DataStreams",
+            "version": "0.1.0-preview.1"
+          },
+          "spans": [
+            {
+              "traceId": "0123456789abcdef0123456789abcdef",
+              "spanId": "2222222222222222",
+              "parentSpanId": "1111111111111111",
+              "name": "process orders",
+              "kind": 5,
+              "startTimeUnixNano": "1793380662933000000",
+              "endTimeUnixNano": "1793380662953000000",
+              "attributes": [
+                {
+                  "key": "messaging.system",
+                  "value": {
+                    "stringValue": "kafka"
+                  }
+                },
+                {
+                  "key": "messaging.operation.name",
+                  "value": {
+                    "stringValue": "process"
+                  }
+                },
+                {
+                  "key": "messaging.operation.type",
+                  "value": {
+                    "stringValue": "process"
+                  }
+                },
+                {
+                  "key": "messaging.destination.name",
+                  "value": {
+                    "stringValue": "orders"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.cluster.id",
+                  "value": {
+                    "stringValue": "fixture-cluster"
+                  }
+                },
+                {
+                  "key": "messaging.destination.partition.id",
+                  "value": {
+                    "stringValue": "0"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.offset",
+                  "value": {
+                    "intValue": "7"
+                  }
+                },
+                {
+                  "key": "messaging.consumer.group.name",
+                  "value": {
+                    "stringValue": "fixture-workers"
+                  }
+                }
+              ],
+              "links": [
+                {
+                  "traceId": "0123456789abcdef0123456789abcdef",
+                  "spanId": "1111111111111111"
+                }
+              ]
+            },
+            {
+              "traceId": "0123456789abcdef0123456789abcdef",
+              "spanId": "3333333333333333",
+              "parentSpanId": "2222222222222222",
+              "name": "send payments",
+              "kind": 4,
+              "startTimeUnixNano": "1793380662943000000",
+              "endTimeUnixNano": "1793380662945000000",
+              "attributes": [
+                {
+                  "key": "messaging.system",
+                  "value": {
+                    "stringValue": "kafka"
+                  }
+                },
+                {
+                  "key": "messaging.operation.name",
+                  "value": {
+                    "stringValue": "send"
+                  }
+                },
+                {
+                  "key": "messaging.operation.type",
+                  "value": {
+                    "stringValue": "send"
+                  }
+                },
+                {
+                  "key": "messaging.destination.name",
+                  "value": {
+                    "stringValue": "payments"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.cluster.id",
+                  "value": {
+                    "stringValue": "fixture-cluster"
+                  }
+                },
+                {
+                  "key": "messaging.destination.partition.id",
+                  "value": {
+                    "stringValue": "0"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.offset",
+                  "value": {
+                    "intValue": "9"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "fixture-target"
+            }
+          },
+          {
+            "key": "deployment.environment.name",
+            "value": {
+              "stringValue": "test"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "LiveFlow.DataStreams",
+            "version": "0.1.0-preview.1"
+          },
+          "spans": [
+            {
+              "traceId": "0123456789abcdef0123456789abcdef",
+              "spanId": "4444444444444444",
+              "parentSpanId": "3333333333333333",
+              "name": "process payments",
+              "kind": 5,
+              "startTimeUnixNano": "1793380662958000000",
+              "endTimeUnixNano": "1793380662973000000",
+              "attributes": [
+                {
+                  "key": "messaging.system",
+                  "value": {
+                    "stringValue": "kafka"
+                  }
+                },
+                {
+                  "key": "messaging.operation.name",
+                  "value": {
+                    "stringValue": "process"
+                  }
+                },
+                {
+                  "key": "messaging.operation.type",
+                  "value": {
+                    "stringValue": "process"
+                  }
+                },
+                {
+                  "key": "messaging.destination.name",
+                  "value": {
+                    "stringValue": "payments"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.cluster.id",
+                  "value": {
+                    "stringValue": "fixture-cluster"
+                  }
+                },
+                {
+                  "key": "messaging.destination.partition.id",
+                  "value": {
+                    "stringValue": "0"
+                  }
+                },
+                {
+                  "key": "messaging.kafka.offset",
+                  "value": {
+                    "intValue": "9"
+                  }
+                },
+                {
+                  "key": "messaging.consumer.group.name",
+                  "value": {
+                    "stringValue": "fixture-workers"
+                  }
+                }
+              ],
+              "links": [
+                {
+                  "traceId": "0123456789abcdef0123456789abcdef",
+                  "spanId": "3333333333333333"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

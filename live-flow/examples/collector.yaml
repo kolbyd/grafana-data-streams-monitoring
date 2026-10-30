@@ -1,0 +1,41 @@
+# Optional OTLP/gRPC -> Live Flow bridge. OTLP/HTTP on 4319 avoids the service's 4318.
+# Merge the live branch into your EXISTING collector to preserve its Grafana pipeline.
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 127.0.0.1:4317
+      http:
+        endpoint: 127.0.0.1:4319
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 256
+    spike_limit_mib: 64
+  batch/live:
+    timeout: 100ms
+    send_batch_size: 256
+    send_batch_max_size: 1024
+exporters:
+  otlphttp/live:
+    endpoint: http://127.0.0.1:4318
+    headers:
+      Authorization: "Bearer ${env:LIVEFLOW_API_KEY}"
+    sending_queue:
+      enabled: true
+      queue_size: 1000
+      num_consumers: 2
+    retry_on_failure:
+      enabled: true
+      initial_interval: 1s
+      max_interval: 5s
+      max_elapsed_time: 30s
+service:
+  pipelines:
+    traces/live:
+      receivers: [otlp]
+      processors: [memory_limiter, batch/live]
+      exporters: [otlphttp/live]
+# Set LIVEFLOW_API_KEY to the service key, or an empty string for local anonymous review.
+# Branch before tail sampling. This cannot recover app-side head-sampled spans.
+# Set authenticated, network-appropriate receiver addresses if collecting remotely.
